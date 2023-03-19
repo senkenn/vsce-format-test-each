@@ -1,17 +1,16 @@
 module.exports = {
   env: {
     es2021: true,
-    node: true
+    node  : true
   },
   extends: [
     'eslint:recommended',
-    'plugin:react/recommended',
     'plugin:@typescript-eslint/recommended'
   ],
-  parser: '@typescript-eslint/parser',
+  parser       : '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 'latest',
-    sourceType: 'module'
+    sourceType : 'module'
   },
   plugins: [
     '@typescript-eslint'
@@ -23,7 +22,7 @@ module.exports = {
      * 
      * @description インデントはスペース２つ。switch-case文はインデントをする
      */
-    'indent': ['error', 2, { 'SwitchCase': 1 }],
+    'indent'         : ['error', 2, { 'SwitchCase': 1 }],
     'linebreak-style': [
       'error',
       'unix'
@@ -67,10 +66,10 @@ module.exports = {
       'error',
       {
         beforeBlockComment: true,
-        afterBlockComment: false,
-        beforeLineComment: true,
-        afterLineComment: false,
-        allowClassStart: false
+        afterBlockComment : false,
+        beforeLineComment : true,
+        afterLineComment  : false,
+        allowClassStart   : false
       }
     ],
 
@@ -112,8 +111,8 @@ module.exports = {
       'error',
       {
         beforeColon: false,
-        afterColon: true,
-        align: 'colon'
+        afterColon : true,
+        align      : 'colon'
       }
     ],
 
@@ -125,49 +124,49 @@ module.exports = {
       'error',
       {
         selector: 'interface',
-        format: ['PascalCase'],
-        custom: {
+        format  : ['PascalCase'],
+        custom  : {
           regex: '^I[A-Z]',
           match: true
         }
       },
       {
         selector: 'class',
-        format: ['PascalCase']
+        format  : ['PascalCase']
       },
       {
         selector: 'typeAlias',
-        format: ['PascalCase']
+        format  : ['PascalCase']
       },
       {
         selector: 'function',
-        format: ['camelCase']
+        format  : ['camelCase']
       },
       {
         selector: 'method',
-        format: ['camelCase']
+        format  : ['camelCase']
       },
       {
         selector: 'variable',
-        format: ['camelCase', 'PascalCase', 'snake_case']
+        format  : ['camelCase', 'PascalCase', 'snake_case']
       },
       {
         selector: 'parameterProperty',
-        format: ['camelCase']
+        format  : ['camelCase']
       },
       {
-        selector: 'property',
-        format: ['camelCase', 'PascalCase'],
+        selector         : 'property',
+        format           : ['camelCase', 'PascalCase'],
         leadingUnderscore: 'allow'
       },
       {
         selector: 'parameter',
-        format: ['camelCase']
+        format  : ['camelCase']
       },
       {
         selector: 'typeParameter',
-        format: ['PascalCase'],
-        prefix: ['T', 'U', 'K', 'P', 'E']
+        format  : ['PascalCase'],
+        prefix  : ['T', 'U', 'K', 'P', 'E']
       }
     ],
 
@@ -218,5 +217,11 @@ module.exports = {
     'no-fallthrough': 'error',
   },
   overrides: [
+    {
+      files: '*.js',
+      rules: {
+        '@typescript-eslint/naming-convention': 'off'
+      }
+    }
   ]
 };
