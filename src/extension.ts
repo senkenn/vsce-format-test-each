@@ -1,23 +1,50 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
+
+import * as ts from 'typescript';
 import * as vscode from 'vscode';
+
+import {
+  getFormattedTemplateLiteralList, getTestEachTemplateLiteralInfoList, setGlobalVariableFromConfig
+} from './formatTestEach';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext): void {
 
-  // Use the console to output diagnostic information (console.log) and errors (console.error)
-  // This line of code will only be executed once when your extension is activated
-  console.log('Congratulations, your extension "vsce-format-test-each" is now active!');
+  const disposable = vscode.commands.registerCommand('vsce-format-test-each.format', async () => {
 
-  // The command has been defined in the package.json file
-  // Now provide the implementation of the command with registerCommand
-  // The commandId parameter must match the command field in package.json
-  const disposable = vscode.commands.registerCommand('vsce-format-test-each.helloWorld', () => {
+    const editor = vscode.window.activeTextEditor;
+    const isJSorTS = editor && ['typescript', 'javascript'].includes(editor.document.languageId);
+    if(!editor || !isJSorTS) {
 
-    // The code you place here will be executed every time your command is executed
-    // Display a message box to the user
-    vscode.window.showInformationMessage('Hello World from Format Test Each!');
+      // do nothing
+      return;
+    }
+
+    setGlobalVariableFromConfig();
+
+    // get file text and create sourceFile object with TS compiler API.
+    const document = editor.document;
+    const sourceText = document.getText();
+    const sourceFile = ts.createSourceFile(
+      '', // File name is to be blank.
+      sourceText,
+      {
+        languageVersion: ts.ScriptTarget['Latest'] // TS compiler version is latest.
+      }
+    );
+
+    // get "test.each" and format
+    const testEachTemplateLiteralInfoList = getTestEachTemplateLiteralInfoList(sourceFile);
+    const formattedList = getFormattedTemplateLiteralList(sourceFile, testEachTemplateLiteralInfoList);
+
+    // replace with formatted template literal
+    await editor.edit(editBuilder => {
+      for(const formatted of formattedList) {
+        editBuilder.replace(formatted.range, formatted.text);
+      }
+    });
   });
 
   context.subscriptions.push(disposable);

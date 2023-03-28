@@ -1,7 +1,7 @@
 {
   "name": "vsce-format-test-each",
   "displayName": "Format Test Each",
-  "description": "",
+  "description": "Format test each template literal",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.76.0"
@@ -14,9 +14,23 @@
   "contributes": {
     "commands": [
       {
-        "command": "vsce-format-test-each.helloWorld",
-        "title": "Hello World"
+        "command": "vsce-format-test-each.format",
+        "title": "Format Test Each: Format test each template literal"
       }
+    ],
+    "configuration": {
+      "title": "Format Test Each",
+      "properties": {
+        "formatTestEach.characterWidth": {
+          "type": "number",
+          "default": 0.54,
+          "description": "This is the width of the alphabet and symbols when compared to the width of Japanese characters set as 1. The default value is set to 0.54 to match the default font in VSCode on Windows."
+        }
+      }
+    },
+    "activationEvents": [
+      "onLanguage:javascript",
+      "onLanguage:typescript"
     ]
   },
   "scripts": {
@@ -40,6 +54,9 @@
       "yarn lint"
     ]
   },
+  "dependencies": {
+    "typescript": "^4.9.5"
+  },
   "devDependencies": {
     "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.1",
@@ -54,7 +71,6 @@
     "lint-staged": "^13.2.0",
     "mocha": "^10.2.0",
     "ts-loader": "^9.4.2",
-    "typescript": "^4.9.5",
     "webpack": "^5.75.0",
     "webpack-cli": "^5.0.1"
   },
