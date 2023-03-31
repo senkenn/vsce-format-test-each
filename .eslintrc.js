@@ -65,6 +65,12 @@ module.exports = {
       'allowExpressions': true
     }],
 
+    /**
+     * Disallow renaming import, export, and destructured assignments to the same name
+     * @see https://eslint.org/docs/latest/rules/no-useless-rename
+     */
+    'no-useless-rename': 'error',
+
     // "import React from 'react'"なしでもエラーが出ないようにする
     'react/react-in-jsx-scope': 'off',
 
