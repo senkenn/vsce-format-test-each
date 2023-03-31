@@ -4,13 +4,20 @@
 import * as ts from 'typescript';
 import * as vscode from 'vscode';
 
-import {
-  getFormattedTemplateLiteralList, getTestEachTemplateLiteralInfoList, setGlobalVariableFromConfig
-} from './formatTestEach';
+import { getFormattedTemplateLiteralList, getTestEachTemplateLiteralInfoList } from './formatTestEach';
+import { config, setConfigToGlobalVariable } from './workspaceConfig';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext): void {
+
+  vscode.workspace.onWillSaveTextDocument(() => {
+    if(config.formatOnSave) {
+      vscode.commands.executeCommand('vsce-format-test-each.format');
+    }
+  });
+
+  setConfigToGlobalVariable();
 
   const disposable = vscode.commands.registerCommand('vsce-format-test-each.format', async () => {
 
@@ -21,8 +28,6 @@ export function activate(context: vscode.ExtensionContext): void {
       // do nothing
       return;
     }
-
-    setGlobalVariableFromConfig();
 
     // get file text and create sourceFile object with TS compiler API.
     const document = editor.document;
@@ -37,11 +42,20 @@ export function activate(context: vscode.ExtensionContext): void {
 
     // get "test.each" and format
     const testEachTemplateLiteralInfoList = getTestEachTemplateLiteralInfoList(sourceFile);
-    const formattedList = getFormattedTemplateLiteralList(sourceFile, testEachTemplateLiteralInfoList);
+    const formattedInfoList = getFormattedTemplateLiteralList(sourceFile, testEachTemplateLiteralInfoList);
+
+    // if all test.each template literals are already matched, do nothing.
+    let isMatchAll = false;
+    for(const formattedInfo of formattedInfoList) {
+      isMatchAll = formattedInfo.isMatch;
+    }
+    if(isMatchAll) {
+      return;
+    }
 
     // replace with formatted template literal
     await editor.edit(editBuilder => {
-      for(const formatted of formattedList) {
+      for(const formatted of formattedInfoList) {
         editBuilder.replace(formatted.range, formatted.text);
       }
     });

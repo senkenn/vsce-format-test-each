@@ -1,6 +1,8 @@
 import * as ts from 'typescript';
 import * as vscode from 'vscode';
 
+import { config } from './workspaceConfig';
+
 type TestEachTemplateLiteralInfo = {
   indent: string;
   templateLiteral: ts.TemplateLiteral;
@@ -11,22 +13,10 @@ type TestEachTemplateLiteralInfo = {
 type TestEachTemplateLiteralInfoList = TestEachTemplateLiteralInfo[]
 
 type FormattedDataList = {
+  isMatch: boolean;
   text: string;
   range: vscode.Range;
 }[]
-
-export let characterWidth = 0;
-
-export function setGlobalVariableFromConfig(): void {
-  const config = vscode.workspace.getConfiguration('formatTestEach');
-  const configCharacterWidth = config.get('characterWidth');
-  if(typeof configCharacterWidth !== 'number' ) {
-    throw new Error(`characterWidth must be a number, but got ${typeof configCharacterWidth}`);
-  }
-  if(characterWidth !== configCharacterWidth) {
-    characterWidth = configCharacterWidth;
-  }
-}
 
 export function getTestEachTemplateLiteralInfoList(sourceFile: ts.SourceFile): TestEachTemplateLiteralInfoList {
   const testEachTemplateLiteralInfoList: TestEachTemplateLiteralInfoList = [];
@@ -77,9 +67,10 @@ export function getFormattedTemplateLiteralList(
   const formattedList: FormattedDataList = [];
   for(const testEachTemplateLiteralInfo of testEachTemplateLiteralInfoList) {
     const { indent, templateLiteral } = testEachTemplateLiteralInfo;
+    const templateLiteralText = templateLiteral.getText(sourceFile);
 
     // make table for each cells
-    const table = templateLiteral.getText(sourceFile)
+    const table = templateLiteralText
       .split('\n') // to rows
       .map(line => line.split('|')); // to columns
 
@@ -92,7 +83,7 @@ export function getFormattedTemplateLiteralList(
     }, [] as number[]);
     
     // format
-    const formattedTemplateLiteral = table.reduce((acc, row, currRowIndex): string => {
+    const formattedTemplateLiteralText = table.reduce((acc, row, currRowIndex): string => {
       row.forEach((cell, i) => {
         const cellWidth = countLenOfStrContainingJa(cell.trim());
         const padding = ' '.repeat(maxColumnWidths[i] - cellWidth);
@@ -111,8 +102,9 @@ export function getFormattedTemplateLiteralList(
     const range = new vscode.Range(vscPosStart, vscPosEnd);
 
     formattedList.push({
-      text : formattedTemplateLiteral,
-      range: range
+      isMatch: templateLiteralText === formattedTemplateLiteralText,
+      text   : formattedTemplateLiteralText,
+      range  : range
     });
   }
 
@@ -125,6 +117,6 @@ export function getFormattedTemplateLiteralList(
 function countLenOfStrContainingJa(str: string): number {
   const patternJa = /[^\u0020-\u007F]/g;
   const countJa = str.match(patternJa)?.length ?? 0;
-  const calculatedLenJa = Math.floor(countJa * (1 / (characterWidth) - 1));
+  const calculatedLenJa = Math.floor(countJa * (1 / (config.characterWidth) - 1));
   return str.length + calculatedLenJa;
 }
