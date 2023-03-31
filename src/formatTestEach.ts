@@ -7,7 +7,7 @@ type TestEachTemplateLiteralInfo = {
   indent: string;
   templateLiteral: ts.TemplateLiteral;
   eachFuncFirstParam: ts.StringLiteral | ts.TemplateExpression;
-  eachFuncSecondParamFuncArgs: ts.NodeArray<ts.ParameterDeclaration>
+  eachFuncSecondParamFuncArgs: ts.NodeArray<ts.ParameterDeclaration>;
 }
 
 type TestEachTemplateLiteralInfoList = TestEachTemplateLiteralInfo[]

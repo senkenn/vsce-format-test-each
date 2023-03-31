@@ -37,6 +37,24 @@ module.exports = {
     ],
 
     /**
+     * Type定義のメンバの分割はセミコロンにする
+     * @see https://typescript-eslint.io/rules/member-delimiter-style/
+     */
+    '@typescript-eslint/member-delimiter-style': 'error',
+
+    /**
+     * ブレースの内側にはスペースを入れる
+     * @see https://eslint.org/docs/latest/rules/object-curly-spacing
+     */
+    'object-curly-spacing': ['error', 'always'],
+
+    /**
+     * no space inside parentheses
+     * @see https://eslint.org/docs/latest/rules/space-in-parens
+     */
+    'space-in-parens': ['error', 'never'],
+
+    /**
      * 関数の返却型を明示する
      * @see https://github.com/typescript-eslint/typescript-eslint/blob/main/packages/eslint-plugin/docs/rules/explicit-function-return-type.md
      *
