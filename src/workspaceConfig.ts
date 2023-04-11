@@ -1,13 +1,16 @@
 import * as vscode from 'vscode';
 
-type Config = {
+type WorkspaceConfig = {
   characterWidth: number;
   formatOnSave: boolean;
+}
+type Config = WorkspaceConfig & {
+  outputChannel: vscode.OutputChannel;
 }
 
 export let config: Config;
 
-function getConfig(): Config {
+function getWorkspaceConfig(): WorkspaceConfig {
   const config = vscode.workspace.getConfiguration('formatTestEach');
 
   const characterWidth = config.get('characterWidth');
@@ -23,10 +26,17 @@ function getConfig(): Config {
   return { characterWidth, formatOnSave };
 }
 
-export function setConfigToGlobalVariable(): void {
-  config = getConfig();
-
+/**
+ * Set config to global variables.
+ */
+export function initAndSetEventOfGlobalConfig(): void {
+  const workspaceConfig = getWorkspaceConfig();
+  const outputChannel =  vscode.window.createOutputChannel('Format Test Each');
+  config = { ...workspaceConfig, outputChannel };
+  
   vscode.workspace.onDidChangeConfiguration(() => {
-    config = getConfig();
+    const workspaceConfig = getWorkspaceConfig();
+    config.characterWidth = workspaceConfig.characterWidth;
+    config.formatOnSave = workspaceConfig.formatOnSave;
   });
 }
